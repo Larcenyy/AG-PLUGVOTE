@@ -1,0 +1,14 @@
+{
+    "name": "azuriom/vote",
+    "type": "azuriom-plugin",
+    "description": "Vote plugin for Azuriom",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Azuriom\\Plugin\\Vote\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    }
+}
