@@ -79,8 +79,13 @@
 {{--                    @endforeach--}}
                 </tbody>
             </table>
-            <button id="prevBtn">Précédent</button>
-            <button id="nextBtn">Suivant</button>
+            <nav role="pagination">
+                <ul class="pagination-wrapper pagination list-unstyled d-flex justify-content-center align-items-center gap-4">
+                    <div class="spinner-border pagination-spinner" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </ul>
+            </nav>
         </div>
     </div>
 
@@ -218,5 +223,6 @@
     </style>
 @endpush
 
+{{--{{dd($votes->all())}}--}}
 @include('vote::elements.script')
 
