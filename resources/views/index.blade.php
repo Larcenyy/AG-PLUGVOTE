@@ -94,84 +94,78 @@
             <h2 class="card-title bg-black p-2">
                 <i class="bi bi-gift-fill"></i> {{ trans('vote::messages.sections.rewards') }}
             </h2>
-            <div class="container d-flex flex-wrap gap-3 align-items-center mt-5 mb-3">
-                <div id="carouselExampleControls" class="carousel">
+            <div class="container d-flex flex-wrap gap-3 justify-content-center align-items-center mt-5 mb-3">
+                <div id="carouselExampleControls" class="carousel flex-grow-1">
                     <div class="carousel-inner">
                         @foreach($rewards as $reward)
-                            <div class="carousel-item active">
-                                <div class="card bg-black">
-                                    <div class="mt-4">
-                                        <h5 class="card-title bg-light-subtle p-2">{{ $reward->name }}</h5>
-                                        <div class="img-wrapper"><img src="{{ $reward->imageUrl() }}" class="d-block" alt="{{ $reward->name }}" width="150px"></div>
-                                        <p class="card-text">
-                                            Some quick example text to build on the card title and make up the bulk of the
-                                            card's content.
-                                        </p>
-                                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                            <div class="carousel-item @if($loop->first) active @endif">
+                                <div class="d-flex justify-content-center">
+                                    <div class="flip-card">
+                                        <div class="flip-card-inner @if($reward->commands_bonus && $reward->commands) flip @endif">
+
+                                            {{-- FACE NORMAL --}}
+                                            <div class="flip-card-front d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <h5 class="bg-dark bg-opacity-50 p-2 mt-3">{{ $reward->name }}</h5>
+                                                </div>
+
+                                                @if($reward->money && $reward->commands)
+                                                    <div class="row justify-content-center px-3">
+                                                @endif
+                                                    @if($reward->image)
+                                                        <div class="col-md-6 text-center @if($reward->money && $reward->commands) border-end border-dark border-2 @endif">
+                                                            <img src="{{ $reward->imageUrl() }}" alt="{{ $reward->name }}" width="150">
+                                                        </div>
+                                                    @endif
+                                                    @if($reward->money)
+                                                        <div class="col-md-6 text-center">
+                                                            <img src="URL IMAGE OGRINE" alt="Ogrine" width="150">
+                                                        </div>
+                                                    @endif
+                                                @if($reward->money && $reward->commands)
+                                                    </div>
+                                                @endif
+
+                                                <div class="flip-card-footer bg-dark bg-opacity-50 p-2">
+                                                    {{ $reward->chances }}%
+                                                </div>
+                                            </div>
+
+                                            {{-- FACE BONUS --}}
+                                            <div class="flip-card-back d-flex flex-column justify-content-between">
+                                                <div class="position-relative">
+                                                    <div class="position-absolute top-0 end-0 text-warning fs-2" style="top: -5px !important;"><i class="bi bi-bookmark-star-fill"></i></div>
+                                                    <h5 class="bg-dark bg-opacity-50 p-2 mt-3">{{ $reward->getNameBonus() }}</h5>
+                                                </div>
+
+                                                @if($reward->money_bonus && $reward->commands_bonus)
+                                                    <div class="row justify-content-center px-3">
+                                                @endif
+                                                    @if($reward->image_bonus)
+                                                        <div class="col-md-6 text-center @if($reward->money && $reward->commands) border-end border-dark border-2 @endif">
+                                                            <img src="URL IMAGE BONUS" alt="{{ $reward->getNameBonus() }}" width="150">
+                                                        </div>
+                                                    @endif
+                                                    @if($reward->money_bonus)
+                                                        <div class="col-md-6 text-center">
+                                                            <img src="URL IMAGE OGRINE" alt="Ogrine" width="150">
+                                                        </div>
+                                                    @endif
+                                                @if($reward->money_bonus && $reward->commands_bonus)
+                                                    </div>
+                                                @endif
+
+                                                @if(!in_array($user->role_id, $reward->roles_authorized))
+                                                    <a href="{{ route('shop.home') }}" class="btn btn-primary rounded-0 w-100 p-2">Débloquer la récompense</a>
+                                                @else
+                                                    <h5 class="p-2 mt-3 mb-0 text-uppercase text-warning fs-6">Récompense bonus</h5>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
-{{--                        @foreach($rewards as $reward)--}}
-{{--                            @if($reward->commands_bonus && $reward->commands)--}}
-{{--                                <div style="cursor: pointer;min-height: 200px" data-bs-toggle="tooltip" data-bs-placement="top" title="%{{ $reward->chances }} de l'obtenir" class=" border-light border col-lg-3 d-flex flex-column justify-content-between bg-light-subtle text-center">--}}
-{{--                                    <div class="p-2 z-1 d-flex flex-column gap-1 align-items-center">--}}
-{{--                                        <small class="text-secondary">Récompense gratuite</small>--}}
-{{--                                        <h5 class="d-flex align-items-center justify-content-center mb-0">--}}
-{{--                                            {{ $reward->name }}--}}
-{{--                                        </h5>--}}
-{{--                                        @if($reward->image)--}}
-{{--                                            <img src="{{ $reward->imageUrl() }}" alt="{{ $reward->name }}" width="50px">--}}
-{{--                                        @endif--}}
-{{--                                    </div>--}}
-{{--                                    @if($reward->commands_bonus)--}}
-{{--                                        <div style="cursor: @if(!in_array($user->role_id, $reward->roles_authorized)) pointer @else not-allowed @endif;" class="border-warning bg-warning-subtle border border-2 m-0">--}}
-{{--                                            <div class="m-0 @if(!in_array($user->role_id, $reward->roles_authorized)) opacity-100 @else opacity-25 @endif">--}}
-{{--                                                <small class="text-secondary">Récompense bonus</small>--}}
-{{--                                                <p class="m-0">{{ $reward->getNameBonus() }}</p>--}}
-{{--                                                @if($reward->money_bonus > 0)--}}
-{{--                                                    <hr>--}}
-{{--                                                    <small class="text-secondary">Bonus de {{ $reward->money_bonus }} {{ money_name() }}</small>--}}
-{{--                                                @endif--}}
-{{--                                            </div>--}}
-{{--                                            @if(in_array($user->role_id, $reward->roles_authorized))--}}
-{{--                                                <a href="{{ route('shop.home') }}" class="btn btn-primary rounded-0 w-100 p-1">Débloquer la récompense</a>--}}
-{{--                                            @endif--}}
-{{--                                        </div>--}}
-{{--                                    @endif--}}
-{{--                                </div>--}}
-{{--                            @elseif($reward->commands_bonus && !$reward->commands)--}}
-{{--                                <div style="cursor: @if(in_array($user->role_id, $reward->roles_authorized)) pointer @else not-allowed @endif; min-height: 200px" data-bs-toggle="tooltip" data-bs-placement="top" title="%{{ $reward->chances }} de l'obtenir" class=" border-warning bg-warning-subtle border col-lg-3 d-flex flex-column justify-content-between text-center">--}}
-{{--                                    <div class="p-2 z-1 d-flex flex-column gap-2 align-items-center @if(in_array($user->role_id, $reward->roles_authorized)) opacity-100 @else opacity-25 @endif">--}}
-{{--                                        <small class="text-secondary">Récompense VIP</small>--}}
-{{--                                        <h5 class="d-flex align-items-center justify-content-center mb-0">--}}
-{{--                                            {{ $reward->getNameBonus() }}--}}
-{{--                                        </h5>--}}
-{{--                                        @if($reward->money_bonus > 0)--}}
-{{--                                            <h5>+ {{ intval($reward->money_bonus) }} {{ money_name() }}</h5>--}}
-{{--                                        @endif--}}
-{{--                                        @if($reward->image)--}}
-{{--                                            <img src="{{ $reward->imageUrl() }}" alt="{{ $reward->name }}" width="50px">--}}
-{{--                                        @endif--}}
-{{--                                    </div>--}}
-{{--                                    @if(!in_array($user->role_id, $reward->roles_authorized))--}}
-{{--                                        <a href="{{ route('shop.home') }}" class="btn btn-primary rounded-0">Débloquer la récompense</a>--}}
-{{--                                    @endif--}}
-{{--                                </div>--}}
-{{--                            @else--}}
-{{--                                <div style="cursor: pointer;min-height: 200px" data-bs-toggle="tooltip" data-bs-placement="top" title="%{{ $reward->chances }} de l'obtenir" class="border-light border col-lg-3 d-flex flex-column justify-content-between bg-light-subtle text-center">--}}
-{{--                                    <div class="p-2 z-1 d-flex flex-column gap-2 align-items-center h-100">--}}
-{{--                                        <small class="text-secondary">Récompense gratuite</small>--}}
-{{--                                        <h5 class="d-flex align-items-center justify-content-center mb-0">--}}
-{{--                                            {{ $reward->name }}--}}
-{{--                                        </h5>--}}
-{{--                                        @if($reward->image)--}}
-{{--                                            <img src="{{ $reward->imageUrl() }}" alt="{{ $reward->name }}" width="100px">--}}
-{{--                                        @endif--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-{{--                            @endif--}}
-{{--                        @endforeach --}}
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>

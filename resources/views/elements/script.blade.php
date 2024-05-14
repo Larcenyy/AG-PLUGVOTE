@@ -1,6 +1,6 @@
 <script>
     const votes = @json($votes);
-    const max = 10;
+    const max = 5;
     let loading = true;
 
     window.addEventListener("load", () => {
