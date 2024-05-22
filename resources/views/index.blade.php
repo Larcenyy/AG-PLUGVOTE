@@ -88,46 +88,41 @@
             </nav>
         </div>
     </div>
-
     @if($displayRewards)
         <div class="mt-4">
             <h2 class="card-title bg-black p-2">
                 <i class="bi bi-gift-fill"></i> {{ trans('vote::messages.sections.rewards') }}
             </h2>
             <div class="container d-flex flex-wrap gap-3 justify-content-center align-items-center mt-5 mb-3">
-                <div id="carouselExampleControls" class="carousel flex-grow-1">
-                    <div class="carousel-inner">
-                        @foreach($rewards as $reward)
-                            <div class="carousel-item @if($loop->first) active @endif">
-                                <div class="d-flex justify-content-center">
-                                    <div class="flip-card">
-                                        <div class="flip-card-inner @if($reward->commands_bonus && $reward->commands) flip @endif">
-
+                <div id="carouselExampleControls" class="carousel slide overflow-hidden" data-bs-ride="carousel">
+                    <div class="carousel-inner d-flex" style="gap: 20px!important">
+                        @foreach($rewards as $index => $reward)
+                            <div class="carousel-item @if($index == 0) active @endif" data-bs-interval="10000" style="width: 60%!important;flex: 0 0 20%;!important;">
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <div class="flip-card rounded @if($reward->commands_bonus || $reward->rewardGiveMoney_Bonus()) border-warning border-2 @endif">
+                                        <div class="flip-card-inner @if($reward->commands_bonus || $reward->rewardGiveMoney_Bonus()) flip @endif">
                                             {{-- FACE NORMAL --}}
-                                            <div class="flip-card-front d-flex flex-column justify-content-between">
+                                            <div class="flip-card-front d-flex flex-column justify-content-between rounded">
                                                 <div>
                                                     <h5 class="bg-dark bg-opacity-50 p-2 mt-3">{{ $reward->name }}</h5>
                                                 </div>
 
-                                                @if($reward->money && $reward->commands)
-                                                    <div class="row justify-content-center px-3">
-                                                @endif
-                                                    @if($reward->image)
-                                                        <div class="col-md-6 text-center @if($reward->money && $reward->commands) border-end border-dark border-2 @endif">
-                                                            <img src="{{ $reward->imageUrl() }}" alt="{{ $reward->name }}" width="150">
+                                                <div class="row justify-content-center px-3">
+                                                    @if($reward->commands || $reward->commands_bonus)
+                                                        <div class="col-md-6 text-center @if($reward->commands && $reward->rewardGiveMoney()) border-end border-dark @endif">
+                                                            <img src="{{ $reward->imageUrl() }}" width="150">
                                                         </div>
                                                     @endif
-                                                    @if($reward->money)
+                                                    @if($reward->rewardGiveMoney())
                                                         <div class="col-md-6 text-center">
-                                                            <img src="URL IMAGE OGRINE" alt="Ogrine" width="150">
+                                                            <img src="{{ plugin_asset('vote', 'img/coin.png') }}" alt="Ogrine" width="150">
                                                         </div>
                                                     @endif
-                                                @if($reward->money && $reward->commands)
-                                                    </div>
-                                                @endif
+                                                </div>
 
-                                                <div class="flip-card-footer bg-dark bg-opacity-50 p-2">
-                                                    {{ $reward->chances }}%
+                                                <div class="flip-card-footer bg-dark bg-opacity-50 p-2 d-flex flex-column align-items-center">
+                                                    <span class="">{{ $reward->chances }}%</span>
+                                                    <span>{{ $reward->getNameSite($reward->id) }}</span> <!-- Appel de getNameSite() pour obtenir le nom du site -->
                                                 </div>
                                             </div>
 
@@ -135,23 +130,24 @@
                                             <div class="flip-card-back d-flex flex-column justify-content-between">
                                                 <div class="position-relative">
                                                     <div class="position-absolute top-0 end-0 text-warning fs-2" style="top: -5px !important;"><i class="bi bi-bookmark-star-fill"></i></div>
-                                                    <h5 class="bg-dark bg-opacity-50 p-2 mt-3">{{ $reward->getNameBonus() }}</h5>
+                                                    <h5 class="bg-dark bg-opacity-50 p-2 mt-3">{{ $reward->getNameBonus() }} @if($reward->rewardGiveMoney_Bonus()) +
+                                                        {{intval($reward->money_bonus)}} {{money_name()}} @endif</h5>
                                                 </div>
 
-                                                @if($reward->money_bonus && $reward->commands_bonus)
+                                                @if($reward->rewardGiveMoney_Bonus() && $reward->commands_bonus)
                                                     <div class="row justify-content-center px-3">
                                                 @endif
                                                     @if($reward->image_bonus)
-                                                        <div class="col-md-6 text-center @if($reward->money && $reward->commands) border-end border-dark border-2 @endif">
-                                                            <img src="URL IMAGE BONUS" alt="{{ $reward->getNameBonus() }}" width="150">
+                                                        <div class="col-md-6 text-center @if($reward->rewardGiveMoney_Bonus() && $reward->commands) border-end border-dark border-2 @endif">
+                                                            <img src="{{ $reward->imageUrl_Bonus() }}" alt="{{ $reward->getNameBonus() }}" width="150">
                                                         </div>
                                                     @endif
-                                                    @if($reward->money_bonus)
+                                                    @if($reward->rewardGiveMoney_Bonus())
                                                         <div class="col-md-6 text-center">
-                                                            <img src="URL IMAGE OGRINE" alt="Ogrine" width="150">
+                                                            <img src="{{ plugin_asset('vote', 'img/coin.png') }}" alt="Ogrine" width="150">
                                                         </div>
                                                     @endif
-                                                @if($reward->money_bonus && $reward->commands_bonus)
+                                                @if($reward->rewardGiveMoney_Bonus() && $reward->commands_bonus)
                                                     </div>
                                                 @endif
 
@@ -167,13 +163,11 @@
                             </div>
                         @endforeach
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
                     </button>
                 </div>
             </div>
@@ -191,13 +185,39 @@
     <script src="{{ plugin_asset('vote', 'js/vote.js') }}" defer></script>
     @auth
         <script>
-            window.username  = '{{ $user->name }}';
+            window.username = '{{ $user->name }}';
+
+            let currentTranslateX = 0; // Variable pour stocker la valeur actuelle de la translation
+
+            function showSlide() {
+                document.querySelector('.carousel-inner').style.transform = `translateX(${currentTranslateX}px)`;
+            }
+
+            function nextSlide() {
+                currentTranslateX -= 50; // Décrémenter de 50px à chaque clic sur "suivant"
+                showSlide();
+            }
+
+            function prevSlide() {
+                currentTranslateX += 50; // Incrémenter de 50px à chaque clic sur "précédent"
+                showSlide();
+            }
+
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelector('.carousel-control-next').addEventListener('click', nextSlide);
+                document.querySelector('.carousel-control-prev').addEventListener('click', prevSlide);
+            });
         </script>
     @endauth
 @endpush
 
 @push('styles')
     <style>
+        .carousel-item {
+            transition: transform 0.6s ease;
+        }
+
         #vote-card .spinner-parent {
             display: none;
         }

@@ -249,22 +249,33 @@ class Reward extends Model
      *
      * @param  \Illuminate\Http\UploadedFile  $file
      * @param  bool  $save
-     * @return string
+     * @return string|null
      */
-    public function storeImage_Bonus(UploadedFile $file, bool $save = false): string
+    public function storeImage_Bonus(UploadedFile $file, bool $save = false): ?string
     {
         $this->deleteImage();
 
         $path = basename($file->storePublicly($this->resolveImagePath(), $this->imageDisk));
-
-        $this->setAttribute($this->getImageKey(), $path);
+        $this->image_bonus = $path;
 
         if ($save) {
             $this->save();
         }
 
-        return $this->imageUrl();
+        return $this->imageUrl_Bonus();
     }
+
+    public function imageUrl_Bonus(): ?string
+    {
+        $image = $this->getAttribute('image_bonus');
+
+        if ($image === null) {
+            return null;
+        }
+
+        return url($this->getImageDisk()->url($this->resolveImagePath($image)));
+    }
+
 
     /**
      * Scope a query to only include enabled vote rewards.
@@ -273,5 +284,33 @@ class Reward extends Model
     {
         $query->where('is_enabled', true);
         $query->where('double_accept', true);
+    }
+
+    public function rewardGiveMoney(): bool{
+        if(intval($this->money) > 0){
+            return true;
+        }
+        else return false;
+    }
+
+    function rewardGiveMoney_Bonus(): bool{
+        if(intval($this->money_bonus) > 0){
+            return true;
+        }
+        else return false;
+    }
+
+    public function getNameSite($rewardId)
+    {
+        $reward = Reward::find($rewardId); // Remplacez $rewardId par l'ID de la récompense que vous voulez vérifier.
+        if ($reward) {
+            $sites = $reward->sites()->get(); // Obtenez la liste des sites associés à cette récompense.
+
+            foreach ($sites as $site) {
+                $siteName = $site->name; // Obtenez le nom du site.
+                // Utilisez le nom du site comme requis.
+                echo "$siteName";
+            }
+        }
     }
 }

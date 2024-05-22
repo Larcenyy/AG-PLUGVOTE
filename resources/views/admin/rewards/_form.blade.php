@@ -86,7 +86,7 @@
 
         @error('image_bonus') @enderror
 
-        <img src="{{ ($reward->image_bonus ?? false) ? $reward->imageUrl() : '#' }}" class="mt-2 img-fluid rounded img-preview {{ ($reward->image_bonus ?? false) ? '' : 'd-none' }}" alt="Image" id="image_bonus">
+        <img src="{{ ($reward->image_bonus ?? false) ? $reward->imageUrl_Bonus() : '#' }}" class="mt-2 img-fluid rounded img-preview {{ ($reward->image_bonus ?? false) ? '' : 'd-none' }}" alt="Image" id="image_bonus">
     </div>
 </div>
 
